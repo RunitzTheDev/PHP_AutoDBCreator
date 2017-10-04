@@ -21,44 +21,52 @@ interface AutoDBCreate {
     
     /**
      *@author RunitzTheCat
-     *@param int $index
+     *@param $sheet_num, int $index
      *@return string $sql_code
      */
     public function get_row($sheet_num = 0, $index);
     
     /**
      *@author RunitzTheCat
-     *@param int $index
+     *@param $sheet_num, int $index
      *@return string $sql_code
      */
     public function delete_row($sheet_num = 0, $index);
     
     /**
      * @author RunitzTheCat
+     * @param $sheet_num
      * @return string $sql_code
      */
     public function get_all($sheet_num = 0);
     
     /**
      *@author RunitzTheCat
-     *@param $RowDAO
+     *@param $RowDAO, $sheet_num
      *@return string $sql_code
      */
     public function insert(RowDAO $RowDAO, $sheet_num);
     
     /**
+     * @author RunitzTheCat
+     * @param $sheet_num, array $RowDAOs
+     * @return string $sql_code
+     */
+    public function multiple_insert($sheet_num, array $RowDAOs)
+    
+    /**
      *@author RunitzTheCat
-     *@param $RowDAO, int $index
+     *@param $sheet_num, $RowDAO, int $index
      *@return string $sql_code
      */
     public function update($sheet_num, $RowDAO, $index);
     
     /**
      * @author RunitzTheCat
-     * @param $uploaded_file
-     * @return string $sql_code
+     * @param string path to $uploaded_file, int $sheetStart, int $sheet_
+     * @return array $result
      */
-    public function submit_file($uploaded_file);
+    public function submit_file($uploaded_file, $sheetStart = 0, $sheetEnd = -1);
 }
 
 
@@ -260,7 +268,7 @@ class AutoDBCreator implements AutoDBCreate
     //SECTION - SQL Builder Functions//
     /**
      *@author RunitzTheCat
-     *@param int $index
+     *@param $sheet_num, int $index
      *@return string $sql_code
      */
     public function get_row($sheet_num = 0, $index)
@@ -270,7 +278,7 @@ class AutoDBCreator implements AutoDBCreate
     
     /**
      *@author RunitzTheCat
-     *@param int $index
+     *@param $sheet_num, int $index
      *@return string $sql_code
      */
     public function delete_row($sheet_num = 0, $index)
@@ -280,6 +288,7 @@ class AutoDBCreator implements AutoDBCreate
     
     /**
      *@author RunitzTheCat
+     *@param $sheet_num
      *@return string $sql_code
      */
     public function get_all($sheet_num = 0)
@@ -290,7 +299,7 @@ class AutoDBCreator implements AutoDBCreate
     
     /**
      *@author RunitzTheCat
-     *@param $RowDAO
+     *@param RowDAO $RowDAO, $sheet_num
      *@return string $sql_code
      */
     public function insert(RowDAO $RowDAO, $sheet_num) {
@@ -322,7 +331,7 @@ class AutoDBCreator implements AutoDBCreate
     
     /**
      *@author RunitzTheCat
-     *@param array $RowDAOs
+     *@param $sheet_num, array $RowDAOs
      *@return string $sql_code
      */
     public function multiple_insert($sheet_num, array $RowDAOs) {
@@ -386,7 +395,7 @@ class AutoDBCreator implements AutoDBCreate
     
     /**
      *@author RunitzTheCat
-     *@param $RowDAO, int $index
+     *@param int $sheet_num, $RowDAO, int $index
      *@return string $sql_code
      */
     public function update($sheet_num, $RowDAO, $index) {
@@ -416,7 +425,7 @@ class AutoDBCreator implements AutoDBCreate
     
     /**
      * @author RunitzTheCat
-     * @param string path to $uploaded_file
+     * @param string path to $uploaded_file, $sheetStart, $sheetEnd
      * @return array $result
      */
     public function submit_file($uploaded_file, $sheetStart = 0, $sheetEnd = -1)
