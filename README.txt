@@ -2,7 +2,7 @@
 By RunitzTheDev
 
 ***What does it do?***
-Tired of writing out column names in database tables when uploading your Excel files? Look no further! PHP AutoDBCreator will automatically create database tables, upload all data, and immediately return an array representing all data for any Excel files! Simply import the "AutoDBCreator" class and call "submit_file($path)" to instantly get the array representation while simultaneously uploading to a database according to "server_config.php"’s configurations!
+Tired of writing out column names in database tables when uploading your Excel files? Look no further! PHP AutoDBCreator will automatically create database tables, upload all data, and immediately return an array representing all data for any Csv or Excel (or any file type supported by PHPExcel) files! Simply import the "AutoDBCreator" class and call "submit_file($path)" to instantly get the array representation while simultaneously uploading to a database according to "server_config.php"’s configurations!
 
 *This software utilizes the PHPExcel library. Credits where they are due.
 	+Check out "https://github.com/PHPOffice/PHPExcel" for more info!
