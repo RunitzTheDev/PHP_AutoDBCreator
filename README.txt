@@ -35,7 +35,10 @@ The class takes 3 optional parameters:
 	+$dateFormatString: the string indicating the format of any Date values (please refer to PHPExcel SharedDate documentation for available options)
 
 Function:
-	+submit_file($path): returns a 3-dimensional array representing the excel file (sheet, row, cell)
+	+submit_file($path, $sheetStart = 0, $sheetEnd = -1): returns a 3-dimensional array representing the excel file (sheet, row, cell)
+		-$path: $path to the file being uploaded to the Database
+		-$sheetStart: The sheet number to start reading from in the file
+		-$sheetEnd: The last sheet number to read in the file before completing execution (If sheetEnd < sheetStart, ADBC will read all sheets)
 
 
 CONFIGURABLE FILES:
