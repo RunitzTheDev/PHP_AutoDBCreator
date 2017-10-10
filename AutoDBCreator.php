@@ -430,6 +430,10 @@ class AutoDBCreator implements AutoDBCreate
      */
     public function submit_file($uploaded_file, $sheetStart = 0, $sheetEnd = -1)
     {
+        //Increase memory limit and max execution time in case of massive upload files
+        ini_set('memory_limit', '2048M');
+        ini_set('max_execution_time', '1900');
+        
         //Uses PHPExcel Library; Take the uploaded file and create PHPExcel Class
         $inputFileType = PHPExcel_IOFactory::identify($uploaded_file);
         $objReader = PHPExcel_IOFactory::createReader($inputFileType);
@@ -502,7 +506,16 @@ class AutoDBCreator implements AutoDBCreate
                         if(PHPExcel_Shared_Date::isDateTime($cell))
                         {
                             $row_empty = false;
-                            $col_values[table_column_names($sheet_num)[$col_num]] = date($this->dateFormat, PHPExcel_Shared_Date::ExcelToPHP($cell->getValue()));
+                            
+                            if($this->translateExcelCode($cell->getValue()) == 'NA')
+                            {
+                                $col_values[table_column_names($sheet_num)[$col_num]] = 'NA';
+                            }
+                            else if(!($cell->getValue() === NULL  || $cell->getValue() === ''))
+                            {
+                                $dateFormat = date($this->dateFormat, PHPExcel_Shared_Date::ExcelToPHP($cell->getValue()));
+                                $col_values[table_column_names($sheet_num)[$col_num]] = $dateFormat;
+                            }
                         }
                         else if(!($cell->getValue() === NULL  || $cell->getValue() === '') || !$row_empty)
                         {
@@ -534,7 +547,7 @@ class AutoDBCreator implements AutoDBCreate
                 else {
                     $sheetArry[] = $col_values;
                     $tempDAO = new RowDAO($sheet_num, $col_values);
-                    if($row_num % 1024 != 1)
+                    if($row_num % 512 != 1)
                     {
                         $dbRows[] = $tempDAO;
                     }
