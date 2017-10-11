@@ -1,9 +1,9 @@
 <?php
 namespace AutoDBCreator;
 
-require_once (dirname(__FILE__)) . "/PHPExcel/Classes/PHPExcel/IOFactory.php");
-require_once (dirname(__FILE__)) . '/server_config.php');
-require_once (dirname(__FILE__)) . '/dataObj/RowDAO.php');
+require_once (dirname(__FILE__) . "/PHPExcel/Classes/PHPExcel/IOFactory.php");
+require_once (dirname(__FILE__) . '/server_config.php');
+require_once (dirname(__FILE__) . '/dataObj/RowDAO.php');
 
 use PDO;
 use PDOException;
@@ -20,6 +20,54 @@ use AutoDBCreator\dataObj\RowDAO as RowDAO;
  * @brief Interface for AutoDBCreator \n
  */
 interface AutoDBCreate {
+    
+    /**
+     *@author RunitzTheCat
+     *@param bool $value
+     */
+    public function setCalculateValue($value);
+    
+    /**
+     *@author RunitzTheCat
+     *@return bool $value
+     */
+    public function getCalculateValue();
+    
+    /**
+     *@author RunitzTheCat
+     *@param string $value
+     */
+    public function setReplaceSpace($value);
+    
+    /**
+     *@author RunitzTheCat
+     *@return string $value
+     */
+    public function getReplaceSpace();
+    
+    /**
+     *@author RunitzTheCat
+     *@param bool $value
+     */
+    public function setLower($value);
+    
+    /**
+     *@author RunitzTheCat
+     *@return bool $value
+     */
+    public function getLower();
+    
+    /**
+     *@author RunitzTheCat
+     *@param string $value
+     */
+    public function setDateFormat($value);
+    
+    /**
+     *@author RunitzTheCat
+     *@return string $value
+     */
+    public function getDateFormat();
     
     /**
      *@author RunitzTheCat
@@ -252,6 +300,79 @@ class AutoDBCreator implements AutoDBCreate
         }
         $sql_code .= ", PRIMARY KEY (id) );";
         return $sql_code;
+    }
+    
+    //SECTION - Option Modifiers//
+    /**
+     *@author RunitzTheCat
+     *@param bool $value
+     */
+    public function setCalculateValue($value)
+    {
+        $this->calculateValue = $value;
+    }
+    
+    /**
+     *@author RunitzTheCat
+     *@return bool $value
+     */
+    public function getCalculateValue()
+    {
+        return $this->calculateValue;
+    }
+    
+    /**
+     *@author RunitzTheCat
+     *@param string $value
+     */
+    public function setReplaceSpace($value)
+    {
+        $this->replaceSpace = $value;
+    }
+    
+    /**
+     *@author RunitzTheCat
+     *@return string $value
+     */
+    public function getReplaceSpace()
+    {
+        return $this->replaceSpace;
+    }
+    
+    /**
+     *@author RunitzTheCat
+     *@param bool $value
+     */
+    public function setLower($value)
+    {
+        $this->lower = $value;
+    }
+    
+    /**
+     *@author RunitzTheCat
+     *@return bool $value
+     */
+    public function getLower()
+    {
+        return $this->lower;
+    }
+    
+    /**
+     *@author RunitzTheCat
+     *@param string $value
+     */
+    public function setDateFormat($value)
+    {
+        $this->dateFormat = $value;
+    }
+    
+    /**
+     *@author RunitzTheCat
+     *@return string $value
+     */
+    public function getDateFormat()
+    {
+        return $this->dateFormat;
     }
     
     

@@ -29,7 +29,7 @@ $3dArray = $example->submit_file($file_path);
 ***EXAMPLE END***
 
 
-The class takes 4 optional parameters:
+The class takes 4 optional parameters (get / set functions available for each):
 	+$calculateValue [default = true]: Boolean Indicator of whether you wish Excel formulas to be calculated or be imported verbatim
 	+$replaceSpaces [default = "_"]: the string used to replace spaces in Column Names and Table Names
 	+$lower [default = true]: Boolean Indicator of whether you wish the Column Names and Table Names are in lower case
@@ -42,6 +42,7 @@ Function:
 		-$sheetEnd: The sheet count in the file to read up to, before completing execution (If sheetEnd < sheetStart, ADBC will read all sheets)
 		
 		Sheet Read Structure: [for ($sheetNum = $sheetStart; $sheetNum < $sheetEnd; ++$sheetNum)]
+	+getVariable() / setVariable($value) functions for each class parameter stated above
 
 
 CONFIGURABLE FILES:
