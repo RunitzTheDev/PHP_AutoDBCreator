@@ -1,15 +1,17 @@
 <?php
-namespace PHP_AutoDBCreator;
+namespace AutoDBCreator;
 
-require_once (dirname(__FILE__) . "/PHPExcel/Classes/PHPExcel/IOFactory.php");
-require_once (dirname(__FILE__) . '/server_config.php');
-require_once (dirname(__FILE__) . '/DataObj/RowDAO.php');
+require_once (dirname(__FILE__)) . "/PHPExcel/Classes/PHPExcel/IOFactory.php");
+require_once (dirname(__FILE__)) . '/server_config.php');
+require_once (dirname(__FILE__)) . '/dataObj/RowDAO.php');
 
 use PDO;
 use PDOException;
 use PHPExcel_IOFactory;
 use PHPExcel_Shared_Date;
-use PHP_AutoDBCreator\DataObj\RowDAO as RowDAO;
+use PHPExcel_CachedObjectStorageFactory;
+use PHPExcel_Settings;
+use AutoDBCreator\dataObj\RowDAO as RowDAO;
 
 /**
  * @author RunitzTheCat
@@ -21,52 +23,44 @@ interface AutoDBCreate {
     
     /**
      *@author RunitzTheCat
-     *@param $sheet_num, int $index
+     *@param int $index
      *@return string $sql_code
      */
     public function get_row($sheet_num = 0, $index);
     
     /**
      *@author RunitzTheCat
-     *@param $sheet_num, int $index
+     *@param int $index
      *@return string $sql_code
      */
     public function delete_row($sheet_num = 0, $index);
     
     /**
      * @author RunitzTheCat
-     * @param $sheet_num
      * @return string $sql_code
      */
     public function get_all($sheet_num = 0);
     
     /**
      *@author RunitzTheCat
-     *@param $RowDAO, $sheet_num
+     *@param $RowDAO
      *@return string $sql_code
      */
     public function insert(RowDAO $RowDAO, $sheet_num);
     
     /**
-     * @author RunitzTheCat
-     * @param $sheet_num, array $RowDAOs
-     * @return string $sql_code
-     */
-    public function multiple_insert($sheet_num, array $RowDAOs)
-    
-    /**
      *@author RunitzTheCat
-     *@param $sheet_num, $RowDAO, int $index
+     *@param $RowDAO, int $index
      *@return string $sql_code
      */
     public function update($sheet_num, $RowDAO, $index);
     
     /**
      * @author RunitzTheCat
-     * @param string path to $uploaded_file, int $sheetStart, int $sheet_
-     * @return array $result
+     * @param $uploaded_file
+     * @return string $sql_code
      */
-    public function submit_file($uploaded_file, $sheetStart = 0, $sheetEnd = -1);
+    public function submit_file($uploaded_file);
 }
 
 
@@ -114,6 +108,13 @@ class AutoDBCreator implements AutoDBCreate
     private $DBCHARSET;
     
     /**
+     * Boolean Indicator for whether you want Excel Formulas to be Automatically Calculated or Not
+     *
+     * @var bool $calculateValue
+     */
+    private $calculateValue;
+    
+    /**
      * Replacment string for Spaces
      *
      * @var string $replaceSpace
@@ -137,13 +138,14 @@ class AutoDBCreator implements AutoDBCreate
     /**
      *@author RunitzTheCat
      */
-    public function __construct($replaceSpaces = "_", $lower = true, $dateFormatString = "Y-m-d")
+    public function __construct($calculateFormulas = true, $replaceSpaces = "_", $lower = true, $dateFormatString = "Y-m-d")
     {
         $this->DBHOST = server_configs()['dbhost'];
         $this->DBID = server_configs()['dbid'];
         $this->DBPW = server_configs()['dbpw'];
         $this->DBNAME = server_configs()['dbname'];
         $this->DBCHARSET = server_configs()['charset'];
+        $this->calculateValue = $calculateFormulas;
         $this->replaceSpace = $replaceSpaces;
         $this->lowercase = $lower;
         $this->dateFormat = $dateFormatString;
@@ -178,7 +180,7 @@ class AutoDBCreator implements AutoDBCreate
         
         try {
             //Execute $sql_code
-            $pdo->execute($stmt);
+            $stmt->execute();
         } catch (PDOException $e){
             //Rollback on fail
             $pdo->rollBack();
@@ -228,18 +230,6 @@ class AutoDBCreator implements AutoDBCreate
         return $result;
     }
     
-    
-    private function translateExcelCode($string)
-    {
-        if(strpos($string,'VLOOKUP'))
-        {
-            $matches = [];
-            $result = preg_match('/=VLOOKUP\(([^;]+);([^;]+);([^;]+);([^;]+)\)/', $string, $matches, 256);
-            return "NA";
-        }
-        return $string;
-    }
-    
     private function create_db_table($sheet_num) {
         //Tracks columns already done to avoid duplicates
         $completed_columns = [];
@@ -268,7 +258,7 @@ class AutoDBCreator implements AutoDBCreate
     //SECTION - SQL Builder Functions//
     /**
      *@author RunitzTheCat
-     *@param $sheet_num, int $index
+     *@param int $index
      *@return string $sql_code
      */
     public function get_row($sheet_num = 0, $index)
@@ -278,7 +268,7 @@ class AutoDBCreator implements AutoDBCreate
     
     /**
      *@author RunitzTheCat
-     *@param $sheet_num, int $index
+     *@param int $index
      *@return string $sql_code
      */
     public function delete_row($sheet_num = 0, $index)
@@ -288,7 +278,6 @@ class AutoDBCreator implements AutoDBCreate
     
     /**
      *@author RunitzTheCat
-     *@param $sheet_num
      *@return string $sql_code
      */
     public function get_all($sheet_num = 0)
@@ -299,7 +288,7 @@ class AutoDBCreator implements AutoDBCreate
     
     /**
      *@author RunitzTheCat
-     *@param RowDAO $RowDAO, $sheet_num
+     *@param $RowDAO
      *@return string $sql_code
      */
     public function insert(RowDAO $RowDAO, $sheet_num) {
@@ -331,7 +320,7 @@ class AutoDBCreator implements AutoDBCreate
     
     /**
      *@author RunitzTheCat
-     *@param $sheet_num, array $RowDAOs
+     *@param array $RowDAOs
      *@return string $sql_code
      */
     public function multiple_insert($sheet_num, array $RowDAOs) {
@@ -395,7 +384,7 @@ class AutoDBCreator implements AutoDBCreate
     
     /**
      *@author RunitzTheCat
-     *@param int $sheet_num, $RowDAO, int $index
+     *@param $RowDAO, int $index
      *@return string $sql_code
      */
     public function update($sheet_num, $RowDAO, $index) {
@@ -425,11 +414,11 @@ class AutoDBCreator implements AutoDBCreate
     
     /**
      * @author RunitzTheCat
-     * @param string path to $uploaded_file, $sheetStart, $sheetEnd
+     * @param string path to $uploaded_file
      * @return array $result
      */
     public function submit_file($uploaded_file, $sheetStart = 0, $sheetEnd = -1)
-    {
+    {   
         //Increase memory limit and max execution time in case of massive upload files
         ini_set('memory_limit', '2048M');
         ini_set('max_execution_time', '1900');
@@ -506,21 +495,30 @@ class AutoDBCreator implements AutoDBCreate
                         if(PHPExcel_Shared_Date::isDateTime($cell))
                         {
                             $row_empty = false;
-                            
-                            if($this->translateExcelCode($cell->getValue()) == 'NA')
+                            if(!($cell->getValue() === NULL  || $cell->getValue() === '') || !$row_empty)
                             {
-                                $col_values[table_column_names($sheet_num)[$col_num]] = 'NA';
-                            }
-                            else if(!($cell->getValue() === NULL  || $cell->getValue() === ''))
-                            {
-                                $dateFormat = date($this->dateFormat, PHPExcel_Shared_Date::ExcelToPHP($cell->getValue()));
+                                if($this->calculateValue)
+                                {
+                                    $dateFormat = date($this->dateFormat, PHPExcel_Shared_Date::ExcelToPHP($cell->getCalculatedValue()));
+                                }
+                                else
+                                {
+                                    $dateFormat = date($this->dateFormat, PHPExcel_Shared_Date::ExcelToPHP($cell->getValue()));
+                                }
                                 $col_values[table_column_names($sheet_num)[$col_num]] = $dateFormat;
                             }
                         }
                         else if(!($cell->getValue() === NULL  || $cell->getValue() === '') || !$row_empty)
                         {
                             $row_empty = false;
-                            $col_values[table_column_names($sheet_num)[$col_num]] = $this->translateExcelCode($this->literalChars($cell->getValue()));
+                            if($this->calculateValue)
+                            {
+                                $col_values[table_column_names($sheet_num)[$col_num]] = $this->literalChars($cell->getCalculatedValue());
+                            }
+                            else
+                            {
+                                $col_values[table_column_names($sheet_num)[$col_num]] = $this->literalChars($cell->getValue());
+                            }
                         }
                         $completed_columns[] = table_column_names($sheet_num)[$col_num];
                     }
@@ -547,7 +545,7 @@ class AutoDBCreator implements AutoDBCreate
                 else {
                     $sheetArry[] = $col_values;
                     $tempDAO = new RowDAO($sheet_num, $col_values);
-                    if($row_num % 512 != 1)
+                    if($row_num % 1024 != 1)
                     {
                         $dbRows[] = $tempDAO;
                     }

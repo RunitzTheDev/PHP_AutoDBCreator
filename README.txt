@@ -29,10 +29,11 @@ $3dArray = $example->submit_file($file_path);
 ***EXAMPLE END***
 
 
-The class takes 3 optional parameters:
-	+$replaceSpaces: the string used to replace spaces in Column Names and Table Names
-	+$lower: Boolean Indicator of whether you wish the Column Names and Table Names are in lower case
-	+$dateFormatString: the string indicating the format of any Date values (please refer to PHPExcel SharedDate documentation for available options)
+The class takes 4 optional parameters:
+	+$calculateValue [default = true]: Boolean Indicator of whether you wish Excel formulas to be calculated or be imported verbatim
+	+$replaceSpaces [default = "_"]: the string used to replace spaces in Column Names and Table Names
+	+$lower [default = true]: Boolean Indicator of whether you wish the Column Names and Table Names are in lower case
+	+$dateFormatString [default = "Y-m-d"]: the string indicating the format of any Date values (please refer to PHPExcel SharedDate documentation for available options)
 
 Function:
 	+submit_file($path, $sheetStart = 0, $sheetEnd = -1): returns a 3-dimensional array representing the excel file (iterate through sheets, rows, or cells)
